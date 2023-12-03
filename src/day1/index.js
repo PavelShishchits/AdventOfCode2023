@@ -1,5 +1,6 @@
 import resolveDirname from '../utils/resolveDirname.js';
 import fetchFileData from '../utils/fetchFileData.js';
+import pipe from '../utils/pipe.js';
 import path from 'path';
 
 const part1 = async () => {
@@ -9,37 +10,35 @@ const part1 = async () => {
     const dataArray = data.trim().split('\n');
   
     return dataArray.reduce((accumulator, item) => {
-      return accumulator + getFirstAndLastNumbers(item);
+      return accumulator += pipe(
+        replaceWordsWithNums,
+        getFirstAndLastNumbers,
+      )(item); 
     }, 0);
   } catch (e) {
     console.log('Something went wrong', e);
   }
 };
 
-const getFirstAndLastNumbers1 = (string) => {
-  const chars = string.split('');
-  const firstNum = chars.find((value) => !isNaN(value));
-  const lastNum = chars.findLast((value) => !isNaN(value));
-
-  return Number(firstNum + lastNum);
-}
+const replaceWordsWithNums = (d) => {
+  d = d.replaceAll("one", "o1e");
+  d = d.replaceAll("two", "t2o");
+  d = d.replaceAll("three", "t3e");
+  d = d.replaceAll("four", "f4r");
+  d = d.replaceAll("five", "f5e");
+  d = d.replaceAll("six", "s6x");
+  d = d.replaceAll("seven", "s7n");
+  d = d.replaceAll("eight", "e8t");
+  d = d.replaceAll("nine", "n9e");
+  return d;
+};
 
 const getFirstAndLastNumbers = (string) => {
-  let firstNumberIndex;
-  let lastNumberIndex;
-  for (let i = 0; i < string.length; i++) {
-    if (!isNaN(string[i])) {
-      firstNumberIndex = i;
-      break;
-    }
-  }
-  for (let i = string.length - 1; i >= 0; i--) {
-    if (!isNaN(string[i])) {
-      lastNumberIndex = i;
-      break;
-    }
-  }
-  return Number(string[firstNumberIndex] + string[lastNumberIndex]);
+  const chars = string.split('');
+  const firstNum = chars.find((value) => !isNaN(value)) || 0;
+  const lastNum = chars.findLast((value) => !isNaN(value)) || 0;
+
+  return Number(firstNum + lastNum);
 };
 
 (async () => {
