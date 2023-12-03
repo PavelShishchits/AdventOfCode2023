@@ -1,31 +1,29 @@
-import { promises as fs } from 'fs';
+import resolveDirname from '../utils/resolveDirname.js';
+import fetchFileData from '../utils/fetchFileData.js';
 import path from 'path';
 
-async function fetchData() {
+const part1 = async () => {
   try {
-    // toDo use absolute path to run code from any directory + move file to utils
-    const filePath = path.resolve('input.txt');
-    const data = await fs.readFile(filePath, 'utf8');
-    return data;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-const day1 = async () => {
-  try {
-    const data = await fetchData();
-    const dataArray = data.split('\n');
+    const filePath = path.resolve(resolveDirname(import.meta.url), 'input.txt');
+    const data = await fetchFileData(filePath);
+    const dataArray = data.trim().split('\n');
   
     return dataArray.reduce((accumulator, item) => {
-      return accumulator += getFirstAndLastNumbers(item);
+      return accumulator + getFirstAndLastNumbers(item);
     }, 0);
   } catch (e) {
-    console.log('Something went wrong');
+    console.log('Something went wrong', e);
   }
 };
 
-// toDo get number with single loop
+const getFirstAndLastNumbers1 = (string) => {
+  const chars = string.split('');
+  const firstNum = chars.find((value) => !isNaN(value));
+  const lastNum = chars.findLast((value) => !isNaN(value));
+
+  return Number(firstNum + lastNum);
+}
+
 const getFirstAndLastNumbers = (string) => {
   let firstNumberIndex;
   let lastNumberIndex;
@@ -45,6 +43,6 @@ const getFirstAndLastNumbers = (string) => {
 };
 
 (async () => {
-  const result = await day1();
-  console.log(result);
+  const part1Result = await part1();
+  console.log(part1Result);
 })();
