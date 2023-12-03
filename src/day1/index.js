@@ -1,18 +1,18 @@
 import resolveDirname from '../utils/resolveDirname.js';
 import fetchFileData from '../utils/fetchFileData.js';
-import pipe from '../utils/pipe.js';
 import path from 'path';
+import pipe from '../utils/pipe.js';
 
-const part1 = async () => {
+const challange = async (fileName) => {
   try {
-    const filePath = path.resolve(resolveDirname(import.meta.url), 'input.txt');
+    const filePath = path.resolve(resolveDirname(import.meta.url), fileName);
     const data = await fetchFileData(filePath);
     const dataArray = data.trim().split('\n');
   
     return dataArray.reduce((accumulator, item) => {
       return accumulator += pipe(
-        replaceWordsWithNums,
-        getFirstAndLastNumbers,
+        replaceWordsWithNums, // part2
+        getFirstAndLastNumbers, // part1
       )(item); 
     }, 0);
   } catch (e) {
@@ -42,6 +42,6 @@ const getFirstAndLastNumbers = (string) => {
 };
 
 (async () => {
-  const part1Result = await part1();
-  console.log(part1Result);
+  const result = await challange('input.txt');
+  console.log(result);
 })();
