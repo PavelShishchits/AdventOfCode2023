@@ -12,9 +12,11 @@ const challange = async (fileName) => {
   const filePath = path.resolve(resolveDirname(import.meta.url), fileName);
   const data = await fetchFileData(filePath);
   const parsedData = parseInputData(data);
-  const validGames = filterGamesByLimits(parsedData);
-
-  return calcGamesIdSums(validGames);
+  
+  return {
+    part1: calcGamesIdSums(filterGamesByLimits(parsedData, limits)),
+    part2: findGamesPower(parsedData),
+  };
 };
 
 const parseInputData = (data) => {
@@ -28,10 +30,26 @@ const parseInputData = (data) => {
   }, {});
 };
 
-const filterGamesByLimits = (data) => {
+const findGamesPower = (data) => {
+  return Object.keys(data).reduce((acc, key) => {
+    const game = data[key];
+    const { red, green, blue } = findFewestNumberOfCubes(game);
+    const gamePower = red * green * blue;
+    return acc + gamePower;
+  }, 0);     
+};
+
+const findFewestNumberOfCubes = (game) => {
+  return {
+    red: Math.max(...game.map((item) => item.red)),
+    green: Math.max(...game.map((item) => item.green)),
+    blue: Math.max(...game.map((item) => item.blue)),
+  }
+};
+const filterGamesByLimits = (data, limits) => {
   return Object.keys(data).filter((key) => {
-    const games = data[key];
-    return games.every((game) => game.red <= limits.red && game.green <= limits.green && game.blue <= limits.blue)
+    const game = data[key];
+    return game.every((game) => game.red <= limits.red && game.green <= limits.green && game.blue <= limits.blue)
   });
 };
 
@@ -80,6 +98,6 @@ const getGameSum = (game) => {
 };
 
 (async () => {
-  const result = await challange('input.txt');
-  console.log(result);
+  const { part1, part2 } = await challange('input.txt');
+  console.log(part1, part2);
 })();
